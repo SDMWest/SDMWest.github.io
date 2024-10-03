@@ -20,53 +20,61 @@
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
         }
         h1 {
             color: #4a4a4a;
         }
         p {
             color: #6a6a6a;
+            margin-bottom: 1rem;
         }
-        #error {
-            color: #ff3860;
-            display: none;
+        #url-display {
+            word-break: break-all;
+            background-color: #f0f0f0;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 1rem;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Authorization Successful</h1>
-        <p>You can close this window now.</p>
-        <p id="error"></p>
+        <p>Please copy the entire URL below and paste it into the application:</p>
+        <div id="url-display"></div>
+        <button onclick="copyUrl()">Copy URL</button>
+        <p>After copying the URL, you can close this window and return to the application.</p>
     </div>
-
     <script>
-        // Parse the URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const realmId = urlParams.get('realmId');
-        
-        // Redirect to our custom protocol
-        if (code && realmId) {
-            window.location.href = `sdmbatching://oauth-callback?code=${encodeURIComponent(code)}&realmId=${encodeURIComponent(realmId)}`;
-        } else {
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('error').textContent = 'Error: Missing authorization parameters';
-        }
+        // Display the current URL
+        document.getElementById('url-display').textContent = window.location.href;
 
-        // Fallback for browsers that don't support custom protocols
-        setTimeout(() => {
-            if (document.hidden) return; // Page is in background, likely succeeded
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('error').textContent = 'If the application did not open, please manually copy this URL and paste it into the application:';
-            const fallbackUrl = `sdmbatching://oauth-callback?code=${encodeURIComponent(code)}&realmId=${encodeURIComponent(realmId)}`;
-            const fallbackElement = document.createElement('textarea');
-            fallbackElement.value = fallbackUrl;
-            fallbackElement.setAttribute('readonly', '');
-            fallbackElement.style.width = '100%';
-            fallbackElement.style.marginTop = '10px';
-            document.querySelector('.container').appendChild(fallbackElement);
-        }, 2000); // Wait 2 seconds before showing fallback
+        // Function to copy the URL
+        function copyUrl() {
+            const el = document.createElement('textarea');
+            el.value = window.location.href;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert('URL copied to clipboard!');
+        }
     </script>
 </body>
 </html>
